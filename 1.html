@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智护医漂路：智能化计划生成系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #f4d084;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        .system-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .navbar a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            transition: font-size 0.3s, font-weight 0.3s;
+        }
+
+        /* 修改：点击后字体变红并加粗 */
+        .navbar a.active {
+            color: red;
+            font-weight: bold;
+        }
+
+        .page {
+            display: none;
+            height: 100vh;
+            padding-top: 50px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .bg-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .bg-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .bg-image.active {
+            display: block;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #555;
+        }
+
+        .nav-btn.prev {
+            right: 50px;
+        }
+
+        .nav-btn.next {
+            right: 10px;
+        }
+
+        .nav-btn i {
+            font-size: 18px;
+        }
+
+        /* 方案生成页面样式 */
+        #plan {
+            position: relative;
+            background: url('https://dummyimage.com/1920x1080/000/fff') no-repeat center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        #plan .main-title {
+            position: absolute;
+            left: 50px;
+            font-size: 28px;
+            color: #f9c29c;
+            line-height: 1.6;
+        }
+
+        #plan .container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        #plan .icon-group {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        #plan .icon-item {
+            margin: 0 30px;
+            text-align: center;
+        }
+
+        #plan .icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: #333;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        #plan .icon:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        #plan .desc {
+            font-size: 16px;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        #plan .btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #f9c29c;
+            text-decoration: none;
+            font-size: 20px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        #plan .btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <span class="system-title">智护医漂路：智能化计划生成系统</span>
+        <div>
+            <a href="#home">首页</a>
+            <a href="#service">服务介绍</a>
+            <a href="#plan">方案生成</a>
+        </div>
+    </div>
+
+    <!-- 首页内容 -->
+    <div id="home" class="page active">
+        <div class="bg-container">
+            <img src="background\1.png" alt="背景图1" class="bg-image active">
+            <img src="background\2.png" alt="背景图2" class="bg-image">
+        </div>
+        <button class="nav-btn prev" onclick="changeImage(this, 2, -1)">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <button class="nav-btn next" onclick="changeImage(this, 2, 1)">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- 服务介绍页面 -->
+    <div id="service" class="page">
+        <div class="bg-container">
+            <img src="background\3.png" alt="服务图1" class="bg-image active">
+            <img src="background\4.png" alt="服务图2" class="bg-image">
+        </div>
+        <button class="nav-btn prev" onclick="changeImage(this, 2, -1)">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <button class="nav-btn next" onclick="changeImage(this, 2, 1)">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- 方案生成页面 -->
+    <div id="plan" class="page">
+        <style>
+            /* 方案生成页面样式 */
+            #plan {
+                position: relative;
+                background-image: url('background/5.png'); /* 替换为实际背景图路径 */
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                color: #fff;
+            }
+        </style>
+        <div class="main-title">智能化计划生成系统</div>
+        <div class="container">
+            <div class="icon-group">
+                <div class="icon-item">
+                    <div class="icon">AI</div>
+                    <p>开源式人工智能</p>
+                </div>
+                <div class="icon-item">
+                    <div class="icon">输入基本情况</div>
+                    <p>输入基本情况</p>
+                </div>
+                <div class="icon-item">
+                    <div class="icon">个性化服务计划</div>
+                    <p>个性化服务计划</p>
+                </div>
+            </div>
+            <div class="desc">
+                本智能化计划制定系统引入开源人工智能，<br>
+                以多版符合“3+2”模式的个性化活动方案为数据库，<br>
+                使用者可通过输入患儿的生理、心理、需求基本情况来获取智能化服务计划，<br>
+                确定个性化活动内容，准备活动道具。
+            </div>
+            <form action="http://127.0.0.1:5000/" method="get">
+                <button type="submit" class="btn">立即体验</button>
+            </form>            
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+
+        function changeImage(btn, total, direction) {
+            const page = btn.closest('.page');
+            const images = page.querySelectorAll('.bg-image');
+            currentIndex = (currentIndex + direction + total) % total;
+            images.forEach(img => img.classList.remove('active'));
+            images[currentIndex].classList.add('active');
+        }
+
+        // 导航跳转
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = e.target.getAttribute('href').substring(1);
+                document.querySelectorAll('.page').forEach(page =>
+                    page.classList.remove('active')
+                );
+                document.getElementById(target).classList.add('active');
+
+                // 为当前点击的链接添加active类，去除其他链接的active类
+                document.querySelectorAll('.navbar a').forEach(a => a.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

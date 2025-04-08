@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人信息录入</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: url('7.png') no-repeat center/cover;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 1000px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #0e0d0d;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        label {
+            width: 120px;
+            color: #111110;
+            font-size: 18px;
+        }
+
+        input,
+        textarea {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #d84315;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        .btn {
+            background: #6b2c28;
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            grid-column: span 2;
+            justify-self: center;
+        }
+
+        #changeCaptcha {
+            background: #6b2c28;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+
+        canvas {
+            border: 2px solid #d84315;
+        }
+
+        /* 自定义样式匹配红色主题 */
+        input[type="checkbox"],
+        input[type="radio"] {
+            accent-color: #d84315;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>个人信息录入</h2>
+        <form id="infoForm" class="form-grid" method="POST" action="/">
+            <!-- 左列 -->
+            <div>
+                <div class="form-group">
+                    <label>姓名：</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>性别：</label>
+                    <input type="radio" name="gender" value="女"> 女
+                    <input type="radio" name="gender" value="男"> 男
+                </div>
+                <div class="form-group">
+                    <label>年龄：</label>
+                    <input type="number" name="age" min="0" max="16" required> 岁
+                </div>
+                <div class="form-group">
+                    <label>性格：</label>
+                    <input type="checkbox" name="character" value="外向活泼"> 外向活泼
+                    <input type="checkbox" name="character" value="内向寡言"> 内向寡言
+                </div>
+                <div class="form-group">
+                    <label>人际交往能力：</label>
+                    <input type="radio" name="communication" value="正常"> 正常
+                    <input type="radio" name="communication" value="较弱"> 较弱
+                </div>
+                <div class="form-group">
+                    <label>家庭情况：</label>
+                    <textarea name="family" cols="30" rows="3"></textarea>
+                </div>
+            </div>
+            <!-- 右列 -->
+            <div>
+                <div class="form-group">
+                    <label>学习需求：</label>
+                    <input type="checkbox" name="studyNeed" value="兴趣培养类"> 兴趣培养类
+                    <input type="checkbox" name="studyNeed" value="课程学习类"> 课程学习类
+                    <input type="checkbox" name="studyNeed" value="益智游戏类"> 益智游戏类
+                </div>
+                <div class="form-group">
+                    <label>具体描述：</label>
+                    <textarea name="description" cols="30" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>兴趣爱好：</label>
+                    <textarea name="hobby" cols="30" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>生病情况：</label>
+                    <textarea name="illness" cols="30" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>服务类型：</label>
+                    <input type="radio" name="serviceType" value="个案社会工作"> 个案社会工作
+                    <input type="radio" name="serviceType" value="小组社会工作"> 小组社会工作
+                </div>
+                <div class="form-group">
+                    <label>信息录入人：</label>
+                    <input type="text" name="inputter">
+                </div>
+                <div class="form-group">
+                    <label>验证码：</label>
+                    <input type="text" name="captcha" required>
+                    <canvas id="captchaCanvas" width="120" height="40"></canvas>
+                    <button type="button" id="changeCaptcha">更换验证码</button>
+                </div>
+                <button type="submit" class="btn">提交</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const captchaCanvas = document.getElementById('captchaCanvas');
+        const changeCaptchaBtn = document.getElementById('changeCaptcha');
+        let currentCaptcha = '';
+
+        function generateCaptcha() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let captcha = '';
+            for (let i = 0; i < 4; i++) {
+                captcha += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return captcha.toUpperCase();
+        }
+
+        function drawCaptcha(captcha) {
+            const ctx = captchaCanvas.getContext('2d');
+            ctx.clearRect(0, 0, captchaCanvas.width, captchaCanvas.height);
+            ctx.font = '24px Arial';
+            for (let i = 0; i < captcha.length; i++) {
+                ctx.fillText(captcha[i], 24 * i + 12, 30);
+            }
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height);
+                ctx.lineTo(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height);
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.stroke();
+            }
+        }
+
+        function initCaptcha() {
+            currentCaptcha = generateCaptcha();
+            drawCaptcha(currentCaptcha);
+        }
+
+        changeCaptchaBtn.addEventListener('click', initCaptcha);
+
+        document.getElementById('infoForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const userCaptcha = this.captcha.value;
+            if (userCaptcha === currentCaptcha) {
+                this.submit();
+            } else {
+                alert('验证码错误！');
+            }
+        });
+
+        initCaptcha();
+    </script>
+</body>
+
+</html>
+    
